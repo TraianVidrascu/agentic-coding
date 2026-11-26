@@ -4,13 +4,16 @@
 
 ## Trim: block junk reads
 
-Searches now run through `Bash`, so match on it as well as `Read`.
+A search can arrive as any of several tools, so match **every** route into the file system, not
+just `Read`. Check your session's tool list and cover what's there: today that means the
+dedicated search tools as well as shell commands.
 
-`.claude/hooks/no-junk.sh` (PreToolUse, matcher `Read|Bash`):
+`.claude/hooks/no-junk.sh` (PreToolUse, matcher `Read|Bash|Grep|Glob`):
 ```bash
 #!/bin/bash
 input=$(cat)
-target=$(echo "$input" | jq -r '.tool_input.file_path // .tool_input.command // empty')
+# one field per tool: Read/Grep use path-ish fields, Glob/Grep a pattern, Bash a command
+target=$(echo "$input" | jq -r '.tool_input.file_path // .tool_input.path // .tool_input.pattern // .tool_input.command // empty')
 if echo "$target" | grep -qE 'node_modules|package-lock\.json|dist/|\.pytest_cache|__pycache__|data/.*\.db'; then
   echo "Generated or huge path. Search src/ instead, or use the map in CLAUDE.md." >&2
   exit 2

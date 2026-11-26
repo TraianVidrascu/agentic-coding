@@ -174,7 +174,7 @@ The details still reach the agent, but only when it touches those files.
 
 | Need | Use | Why it's light |
 |---|---|---|
-| broad read-only search | built-in `Explore` | skips CLAUDE.md, read-only tools |
+| broad read-only search | built-in `Explore` | read-only tools, tuned to read excerpts rather than whole files |
 | project-aware search | custom `code-finder` | narrow tools, short prompt, haiku |
 | needs the current conversation | fork | reuses the main cache, but carries the **whole** conversation, so it's heavy per turn |
 

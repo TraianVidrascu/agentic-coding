@@ -8,8 +8,11 @@
 glob/find "**/*repository*"  →  grep -n "def list_entries"  →  read lines 40-80  →  answer
 ```
 
-- Tools: `ls`/`find` (files by name), `grep`/`rg` (text by regex), reading files.
-- Recent Claude Code runs search through `Bash` (`rg`, `find`); older versions had separate `Grep`/`Glob` tools.
+- Tools: find files by name, search text by regex, read files.
+- Claude Code has dedicated `Glob` (files by pattern) and `Grep` (content, built on ripgrep)
+  tools, and can also run `rg`/`find` through `Bash`. Which route it takes varies by version
+  and by what you ask for, so **don't assume** one: check your own session's tool list
+  (`basics/01_coding_agent.md`) before writing anything that depends on it, such as a hook matcher.
 - **Exact names** (`create_app`, `EntryIn`, `/api/entries`): grep is precise and always up to date. It beats a vector DB.
 - **Concepts** ("where is validation?"): grep only works if the LLM guesses the right words. Semantic search helps here (see `05`).
 

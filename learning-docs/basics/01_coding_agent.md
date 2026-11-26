@@ -52,9 +52,11 @@ The program that wraps the LLM and turns it into an agent. It:
 - Good feedback makes a better agent: give it tests and commands it can run to check its own work.
 - Be specific: name the files, constraints and how to verify the result.
 
-# Appendix: All tools and where they come from
+# Appendix: Tools, and where they come from
 
-Example: the tools in a Claude Code session. Any tool comes from one of three places.
+## The durable part
+
+Whatever the names are in your version, every tool comes from one of three places:
 
 | Source | What it is |
 |---|---|
@@ -62,28 +64,47 @@ Example: the tools in a Claude Code session. Any tool comes from one of three pl
 | **MCP servers** | External services plugged in via the Model Context Protocol (named `mcp__<server>__<tool>`) |
 | **Deferred** | Built-in or MCP tools whose definitions load only when needed (via `ToolSearch`), to save context |
 
-## Built-in
+And the **capabilities** an agent needs are stable, even as the tool names change:
 
-| Group | Tools | Purpose |
-|---|---|---|
-| Files | `Read`, `Write`, `Edit`, `NotebookEdit` | read and change files |
-| Shell | `Bash`, `Monitor`, `TaskStop` | run commands, watch or stop background jobs |
-| Web | `WebSearch`, `web-fetch` agent | search the web, fetch pages |
-| Agents | `Agent`, `SendMessage`, `ListAgents`, `Workflow` | start subagents and talk to them |
-| Planning | `EnterPlanMode`, `ExitPlanMode`, `AskUserQuestion` | plan first, ask the user |
-| Isolation | `EnterWorktree`, `ExitWorktree` | work in a separate git worktree |
-| Scheduling | `CronCreate`, `CronList`, `CronDelete`, `ScheduleWakeup`, `RemoteTrigger` | recurring or delayed tasks |
-| Extensions | `Skill`, `ToolSearch` | load skills, load deferred tools |
-| Output | `Artifact`, `ArtifactComments`, `ArtifactData`, `PushNotification` | publish pages, notify the user |
-| Meta | `SendFeedback`, `ReportFindings`, `EndConversation` | feedback, code review results |
-
-## MCP (connected services, vary per user)
-
-| Server | Example tools |
+| Capability | Why an agent needs it |
 |---|---|
-| Claude Docs | `batch`, `update`, `create`, `read`, `query`, `export` |
-| Google Calendar | `list_events`, `create_event`, `suggest_time` |
-| Google Drive / Gmail | `authenticate` (until connected) |
+| read and write files | the actual work |
+| search by name and by content | find the code without reading everything |
+| run commands | tests, git, builds: the agent's feedback loop |
+| reach the web | docs and errors it hasn't seen |
+| delegate to subagents | keep the main context clean, work in parallel |
+| plan and ask | agree on the approach before editing |
+| isolate | worktrees, so parallel work doesn't collide |
+| background and scheduled work | long jobs, recurring tasks |
+| load more instructions or tools on demand | pay for context only when it's used |
+
+When you design an agent, think in this column, not in tool names: *"this reviewer needs
+read + search + run commands, and must not be able to write."*
+
+## An example snapshot
+
+One real session's built-in tools, grouped by capability. **Treat this as an illustration, not
+a reference.** Tools get added, renamed, split and deferred between versions.
+
+| Capability | Tools in that session |
+|---|---|
+| Files | `Read`, `Write`, `Edit`, `NotebookEdit` |
+| Search | `Grep`, `Glob` |
+| Shell | `Bash`, `PowerShell`, `Monitor` |
+| Web | `WebSearch`, `WebFetch` |
+| Subagents | `Agent`, `SendMessage`, `Workflow` |
+| Planning | `EnterPlanMode`, `ExitPlanMode`, `AskUserQuestion` |
+| Isolation | `EnterWorktree`, `ExitWorktree` |
+| Background tasks | `TaskCreate`, `TaskList`, `TaskGet`, `TaskOutput`, `TaskUpdate`, `TaskStop` |
+| Scheduling | `CronCreate`, `CronList`, `CronDelete`, `ScheduleWakeup`, `PushNotification` |
+| Extensions | `Skill`, `ToolSearch` |
+| Output | `Artifact`, `ReportFindings` |
+
+Plus MCP tools, which differ per user depending on what's connected (`basics/07_mcp.md`) --
+in that session, Claude Docs, Google Calendar, Gmail and Drive.
+
+**To see your own list**, just ask the agent: *"list the tools you have, grouped by purpose"*.
+Run `/context` to see what they cost you in tokens.
 
 ## Related, but not tools
 
