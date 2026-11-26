@@ -1,0 +1,5 @@
+data/*.db
+node_modules/
+src/frontend/dist/
+__pycache__/
+.pytest_cache/
